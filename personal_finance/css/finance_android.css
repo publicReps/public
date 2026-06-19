@@ -1,0 +1,389 @@
+:root {
+    --font-family-sans: 'Inter', sans-serif;
+    --color-primary: #3B82F6;
+    --color-primary-hover: #2563EB;
+    --color-secondary: #10B981;
+    --color-secondary-hover: #059669;
+    --color-danger: #EF4444;
+    --color-danger-hover: #DC2626;
+    --color-text-primary: #1F2937;
+    --color-text-secondary: #4B5563;
+    --color-text-light: #6B7280;
+    --color-bg-light: #F9FAFB;
+    --color-bg-default: #F3F4F6;
+    --color-bg-card: #FFFFFF;
+    --color-border: #D1D5DB;
+    --color-border-input: #9CA3AF;
+    --border-radius-sm: 0.25rem;
+    --border-radius-md: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    line-height: 1.6;
+    background-color: var(--color-bg-default);
+    color: var(--color-text-primary);
+    font-size: 16px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 0.75rem;
+}
+
+h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+}
+
+h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.form-section-title {
+    text-align: left;
+}
+
+.ui-section {
+    background-color: var(--color-bg-card);
+    padding: 1rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--border-radius-md);
+    font-size: 0.95rem;
+    background-color: var(--color-bg-light);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.form-group {
+    margin-bottom: 0.85rem;
+}
+
+.form-group-full-width {
+    grid-column: 1 / -1;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.65rem 1.3rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-secondary-hover);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: var(--color-danger-hover);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+.data-management {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.data-management input[type="file"] {
+    width: 100%;
+}
+
+.data-management button {
+    width: 100%;
+    margin-left: 0;
+}
+
+.bank-account-slider-wrapper {
+    position: relative;
+}
+
+.bank-account-slider-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 0.75rem 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) var(--color-bg-light);
+}
+
+.bank-account-slider-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.bank-account-slider-container::-webkit-scrollbar-track {
+    background: var(--color-bg-light);
+    border-radius: 3px;
+}
+
+.bank-account-slider-container::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 3px;
+}
+
+.bank-card {
+    display: inline-block;
+    width: 240px;
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+    margin-right: 0.75rem;
+    box-shadow: var(--shadow-sm);
+    vertical-align: top;
+    white-space: normal;
+}
+
+.bank-card:last-child {
+    margin-right: 0;
+}
+
+.bank-card-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+}
+
+.bank-card-detail {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.25rem;
+    word-break: break-word;
+}
+
+.bank-card-detail strong {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.bank-card-actions {
+    margin-top: 0.75rem;
+    text-align: right;
+}
+
+.no-bank-accounts-placeholder,
+.no-data-placeholder {
+    text-align: center;
+    color: var(--color-text-light);
+    padding: 1.5rem 1rem;
+    display: none;
+}
+
+.slider-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sliderPrevBtn {
+    left: -5px;
+}
+
+#sliderNextBtn {
+    right: -5px;
+}
+
+.summary-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.overall-summary,
+.bank-balances-summary {
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+}
+
+.summary p,
+.summary li {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.4rem;
+}
+
+.summary span,
+.summary strong {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+#bankBalancesList {
+    list-style: none;
+}
+
+.summary hr {
+    margin: 0.75rem 0;
+    border-color: var(--color-border);
+    border-style: solid;
+    border-width: 1px 0 0 0;
+}
+
+#transactionTableDesktop {
+    display: none;
+}
+
+.transaction-list-mobile {
+    display: block;
+}
+
+.transaction-card-mobile {
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 0.9rem;
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.transaction-card-mobile .trans-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    font-size: 0.875rem;
+}
+
+.transaction-card-mobile .trans-row:last-child {
+    margin-bottom: 0;
+}
+
+.transaction-card-mobile .trans-label {
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+.transaction-card-mobile .trans-value {
+    color: var(--color-text-primary);
+    font-weight: 500;
+    text-align: right;
+}
+
+.transaction-card-mobile .trans-value.credit {
+    color: var(--color-secondary);
+}
+
+.transaction-card-mobile .trans-value.debit {
+    color: var(--color-danger);
+}
+
+.transaction-card-mobile .trans-note {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-top: 0.3rem;
+    padding-top: 0.3rem;
+    border-top: 1px dashed var(--color-border);
+    word-break: break-word;
+}
+
+.transaction-card-mobile .trans-actions {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.table-responsive-wrapper {
+    overflow-x: auto;
+}

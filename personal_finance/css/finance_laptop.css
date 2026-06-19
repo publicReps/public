@@ -1,0 +1,161 @@
+ .container {
+     margin: 2rem auto;
+     padding: 1.5rem;
+ }
+
+ h1 {
+     font-size: 2.25rem;
+ }
+
+ h2 {
+     font-size: 1.5rem;
+     margin-bottom: 1.5rem;
+     padding-bottom: 0.75rem;
+ }
+
+ h3 {
+     font-size: 1.25rem;
+     margin-bottom: 1rem;
+ }
+
+ .ui-section {
+     padding: 1.5rem;
+ }
+
+ .data-management {
+     flex-direction: row;
+     align-items: center;
+ }
+
+ .data-management input[type="file"] {
+     width: auto;
+     flex-grow: 1;
+     max-width: 300px;
+ }
+
+ .data-management button {
+     width: auto;
+ }
+
+ input[type="text"],
+ input[type="number"],
+ select {
+     padding: 0.75rem 1rem;
+     font-size: 1rem;
+ }
+
+ .btn {
+     padding: 0.75rem 1.5rem;
+     font-size: 1rem;
+ }
+
+ .btn-sm {
+     padding: 0.5rem 1rem;
+     font-size: 0.875rem;
+ }
+
+ .form-grid {
+     display: grid;
+     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+     gap: 1rem 1.5rem;
+ }
+
+ /* Make .btn-block span full width in any .form-grid container */
+ .form-grid .btn-block {
+     grid-column: 1 / -1;
+     margin-top: 1rem;
+ }
+
+ /* Ensure form groups in specific forms don't have bottom margin if not needed (e.g., when button has margin-top) */
+ .add-bank-account-form .form-group,
+ .transaction-form .form-group,
+ .account-transfer-section .form-grid .form-group {
+     margin-bottom: 0;
+ }
+
+
+ .form-group-full-width {
+     grid-column: 1 / -1;
+ }
+
+ .bank-card {
+     width: 280px;
+     padding: 1.5rem;
+     margin-right: 1rem;
+ }
+
+ .bank-card-header {
+     font-size: 1.125rem;
+     margin-bottom: 0.75rem;
+ }
+
+ .bank-card-detail {
+     font-size: 0.875rem;
+     margin-bottom: 0.35rem;
+ }
+
+ .bank-card-actions {
+     margin-top: 1rem;
+ }
+
+ #sliderPrevBtn {
+     left: -15px;
+ }
+
+ #sliderNextBtn {
+     right: -15px;
+ }
+
+ .summary-grid {
+     grid-template-columns: 1fr 1fr;
+     gap: 1.5rem;
+ }
+
+ .overall-summary,
+ .bank-balances-summary {
+     padding: 1.5rem;
+ }
+
+ .summary p,
+ .summary li {
+     font-size: 1rem;
+     margin-bottom: 0.5rem;
+ }
+
+ #transactionListMobile {
+     display: none;
+ }
+
+ #transactionTableDesktop {
+     display: table;
+ }
+
+ .transaction-log table {
+     width: 100%;
+     border-collapse: collapse;
+     margin-top: 1rem;
+     font-size: 0.9375rem;
+ }
+
+ .transaction-log th,
+ .transaction-log td {
+     border: 1px solid var(--color-border);
+     padding: 0.75rem 1rem;
+     text-align: left;
+     vertical-align: middle;
+ }
+
+ .transaction-log th {
+     background-color: var(--color-bg-light);
+     font-weight: 600;
+     color: var(--color-text-secondary);
+ }
+
+ .transaction-log tbody tr:nth-child(even) {
+     background-color: var(--color-bg-light);
+ }
+
+ .transaction-log .delete-btn {
+     padding: 0.4rem 0.8rem;
+     font-size: 0.8rem;
+ }

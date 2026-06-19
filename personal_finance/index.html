@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Finance Tracker</title>
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
+    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Base and Mobile Styles -->
+    <link rel="stylesheet" href="css/finance_android.css"> 
+    <!-- Desktop Styles - Loaded only for screens wider than 768px -->
+    <link rel="stylesheet" href="css/finance_laptop.css" media="screen and (min-width: 768px)">
+
+   
+    <!-- <style>
+        /* --- style-base.css CONTENT --- */
+        /* --- style-desktop.css CONTENT (wrapped in media query) --- */
+        /* @media screen and (min-width: 768px) {
+           
+        } */
+    /* </style> */ -->
+</head>
+<body>
+    <div class="container">
+        <h1>Adaptive Finance Tracker</h1>
+
+        <div class="ui-section data-management">
+            <h2>Data Management</h2>
+            <label for="fileInput">Load Data (CSV/JSON):</label>
+            <input type="file" id="fileInput" accept=".csv,.json">
+            <button id="exportCSV" class="btn btn-secondary btn-sm">Export CSV</button>
+            <button id="exportJSON" class="btn btn-secondary btn-sm">Export JSON</button>
+            <button id="clearData" class="btn btn-danger btn-sm">Clear All Data</button>
+        </div>
+
+        <div class="ui-section bank-account-management">
+            <h2>Bank Accounts</h2>
+            <div class="bank-account-slider-wrapper">
+                <button id="sliderPrevBtn" class="slider-nav-btn btn" aria-label="Previous Account">←</button>
+                <div id="bankAccountSlider" class="bank-account-slider-container">
+                    <div class="no-bank-accounts-placeholder" id="noBankAccountsPlaceholder">
+                        No bank accounts added yet. Add one below.
+                    </div>
+                </div>
+                <button id="sliderNextBtn" class="slider-nav-btn btn" aria-label="Next Account">→</button>
+            </div>
+
+            <h3 class="form-section-title" style="margin-top: 2rem;">Add New Bank Account</h3>
+            <div class="add-bank-account-form form-grid">
+                <div class="form-group">
+                    <label for="bankFullNameInput">Account Holder Full Name:</label>
+                    <input type="text" id="bankFullNameInput" placeholder="e.g., John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="bankAccountNumberInput">Account Number (Unique):</label>
+                    <input type="text" id="bankAccountNumberInput" placeholder="e.g., 1234567890">
+                </div>
+                <div class="form-group">
+                    <label for="bankDisplayNameInput">Display Name (e.g., Savings SBI):</label>
+                    <input type="text" id="bankDisplayNameInput" placeholder="e.g., My Primary Savings">
+                </div>
+                <button id="addBankAccountBtn" class="btn btn-primary btn-block">Add Bank Account</button>
+            </div>
+        </div>
+        
+        <!-- New Transfer Section -->
+        <div class="ui-section account-transfer-section">
+            <h2>Transfer Between Accounts</h2>
+            <p id="transferInfoMessage" style="text-align: center; margin-bottom: 1rem; color: var(--color-text-light); display: none;"></p>
+            <div class="form-grid" id="accountTransferFormGrid">
+                <div class="form-group">
+                    <label for="transferFromAccount">From Account:</label>
+                    <select id="transferFromAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label for="transferToAccount">To Account:</label>
+                    <select id="transferToAccount"></select>
+                </div>
+                <div class="form-group">
+                    <label for="transferAmount">Amount (₹):</label>
+                    <input type="number" id="transferAmount" placeholder="e.g., 500.00" step="0.01">
+                </div>
+                <button id="executeTransferBtn" class="btn btn-secondary btn-block">Execute Transfer</button>
+            </div>
+        </div>
+
+        <div class="ui-section transaction-form">
+            <h2>Add Transaction</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="transType">Type:</label>
+                    <select id="transType">
+                        <option value="credit">Credit</option>
+                        <option value="debit">Debit</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount (₹):</label>
+                    <input type="number" id="amount" placeholder="e.g., 100.50" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="mode">Mode:</label>
+                    <select id="mode">
+                        <option value="cash">Cash</option>
+                        <option value="online">Online</option>
+                    </select>
+                </div>
+                <div class="form-group" id="bankAccountSelectorDiv" style="display: none;">
+                    <label for="bankAccountSelect">Bank Account:</label>
+                    <select id="bankAccountSelect">
+                        <option value="">-- Select Bank Account --</option>
+                    </select>
+                </div>
+                <div class="form-group form-group-full-width">
+                    <label for="note">Note (Optional):</label>
+                    <input type="text" id="note" placeholder="e.g., Groceries, Salary Deposit">
+                </div>
+                <button id="addTransactionBtn" class="btn btn-primary btn-block">Add Transaction</button>
+            </div>
+        </div>
+
+        <div class="ui-section summary">
+            <h2>Financial Summary</h2>
+            <div class="summary-grid">
+                <div class="overall-summary">
+                    <h3>Overall</h3>
+                    <p>Total Credited (Cash): <span id="creditedCash">₹0.00</span></p>
+                    <p>Total Credited (Online): <span id="creditedOnline">₹0.00</span></p>
+                    <p>Total Debited (Cash): <span id="debitedCash">₹0.00</span></p>
+                    <p>Total Debited (Online): <span id="debitedOnline">₹0.00</span></p>
+                    <hr>
+                    <p>Available Cash: <span id="availableCash">₹0.00</span></p>
+                    <p>Available Online (All Banks): <span id="availableOnline">₹0.00</span></p>
+                    <h4>Total Balance: <span id="totalBalance">₹0.00</span></h4>
+                </div>
+                <div class="bank-balances-summary">
+                    <h3>Bank Account Balances</h3>
+                    <ul id="bankBalancesList">
+                        <li>No bank accounts to show balances for.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-section transaction-log">
+            <h2>Transaction Log</h2>
+            <div id="transactionListMobile" class="transaction-list-mobile">
+                <!-- Mobile transaction cards go here -->
+            </div>
+            <div class="table-responsive-wrapper">
+                <table id="transactionTableDesktop">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount (₹)</th>
+                            <th>Mode</th>
+                            <th>Bank Account</th>
+                            <th>Note</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTableBody">
+                        <!-- Desktop transactions go here -->
+                    </tbody>
+                </table>
+            </div>
+            <p id="noTransactionsPlaceholder" class="no-data-placeholder">No transactions recorded yet.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const transTypeInput = document.getElementById('transType');
+            const amountInput = document.getElementById('amount');
+            const modeInput = document.getElementById('mode');
+            const noteInput = document.getElementById('note');
+            const addTransactionBtn = document.getElementById('addTransactionBtn');
+            const bankAccountSelectorDiv = document.getElementById('bankAccountSelectorDiv');
+            const bankAccountSelect = document.getElementById('bankAccountSelect');
+
+            const fileInput = document.getElementById('fileInput');
+            const exportCSVBtn = document.getElementById('exportCSV');
+            const exportJSONBtn = document.getElementById('exportJSON');
+            const clearDataBtn = document.getElementById('clearData');
+
+            const creditedCashSpan = document.getElementById('creditedCash');
+            const creditedOnlineSpan = document.getElementById('creditedOnline');
+            const debitedCashSpan = document.getElementById('debitedCash');
+            const debitedOnlineSpan = document.getElementById('debitedOnline');
+            const availableCashSpan = document.getElementById('availableCash');
+            const availableOnlineSpan = document.getElementById('availableOnline');
+            const totalBalanceSpan = document.getElementById('totalBalance');
+            const bankBalancesList = document.getElementById('bankBalancesList');
+            
+            const bankFullNameInput = document.getElementById('bankFullNameInput');
+            const bankAccountNumberInput = document.getElementById('bankAccountNumberInput');
+            const bankDisplayNameInput = document.getElementById('bankDisplayNameInput');
+            const addBankAccountBtn = document.getElementById('addBankAccountBtn');
+            
+            const bankAccountSlider = document.getElementById('bankAccountSlider');
+            const noBankAccountsPlaceholder = document.getElementById('noBankAccountsPlaceholder');
+            const sliderPrevBtn = document.getElementById('sliderPrevBtn');
+            const sliderNextBtn = document.getElementById('sliderNextBtn');
+
+            // Transfer DOM Elements
+            const transferFromAccountSelect = document.getElementById('transferFromAccount');
+            const transferToAccountSelect = document.getElementById('transferToAccount');
+            const transferAmountInput = document.getElementById('transferAmount');
+            const executeTransferBtn = document.getElementById('executeTransferBtn');
+            const transferInfoMessage = document.getElementById('transferInfoMessage');
+            const accountTransferFormGrid = document.getElementById('accountTransferFormGrid');
+
+
+            // --- Data Store ---
+            let transactions = [];
+            let bankAccounts = []; 
+
+            // --- LOCAL STORAGE FUNCTIONS ---
+            function loadFromLocalStorage() {
+                const storedTransactions = localStorage.getItem('financeTransactions');
+                if (storedTransactions) {
+                    transactions = JSON.parse(storedTransactions).map(t => ({
+                        ...t,
+                        amount: parseFloat(t.amount),
+                        date: t.date
+                    }));
+                }
+                const storedBankAccounts = localStorage.getItem('financeBankAccounts');
+                if (storedBankAccounts) {
+                    bankAccounts = JSON.parse(storedBankAccounts);
+                }
+            }
+
+            function saveToLocalStorage() {
+                localStorage.setItem('financeTransactions', JSON.stringify(transactions));
+                localStorage.setItem('financeBankAccounts', JSON.stringify(bankAccounts));
+            }
+
+            // --- BANK ACCOUNT MANAGEMENT & SLIDER ---
+            function generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substring(2);
+            }
+
+            function addBankAccount() {
+                const fullName = bankFullNameInput.value.trim();
+                const accountNumber = bankAccountNumberInput.value.trim();
+                const displayName = bankDisplayNameInput.value.trim();
+
+                if (!fullName) { alert("Account Holder Full Name cannot be empty."); return; }
+                if (!accountNumber) { alert("Account Number cannot be empty."); return; }
+                if (!displayName) { alert("Display Name cannot be empty."); return; }
+                
+                if (bankAccounts.some(acc => acc.accountNumber === accountNumber)) { 
+                    alert("A bank account with this Account Number already exists."); return; 
+                }
+
+                const newAccount = { id: generateId(), fullName, accountNumber, displayName };
+                bankAccounts.push(newAccount);
+                
+                bankFullNameInput.value = ''; bankAccountNumberInput.value = ''; bankDisplayNameInput.value = '';
+                
+                saveToLocalStorage();
+                updateUI();
+                alert(`Bank account "${displayName}" added.`);
+            }
+
+            function deleteBankAccount(accountId) {
+                const accountToDelete = bankAccounts.find(acc => acc.id === accountId);
+                if (!accountToDelete) return;
+                const accountIdentifier = `${accountToDelete.displayName} (...${accountToDelete.accountNumber.slice(-4)})`;
+                if (confirm(`Are you sure you want to delete bank account "${accountIdentifier}"? Transactions associated with this account will be unlinked (shown as 'Deleted Account').`)) {
+                    bankAccounts = bankAccounts.filter(acc => acc.id !== accountId);
+                    transactions.forEach(t => {
+                        if (t.accountId === accountId) {
+                            t.accountId = null; // Unlink
+                            t.accountDisplayName = `N/A (Deleted: ${accountIdentifier})`; 
+                        }
+                    });
+                    saveToLocalStorage();
+                    updateUI();
+                    alert(`Bank account "${accountIdentifier}" deleted.`);
+                }
+            }
+
+            function renderBankAccountCards() {
+                bankAccountSlider.innerHTML = ''; 
+                if (bankAccounts.length === 0) {
+                    noBankAccountsPlaceholder.style.display = 'block';
+                    sliderPrevBtn.style.display = 'none';
+                    sliderNextBtn.style.display = 'none';
+                    return;
+                }
+                
+                noBankAccountsPlaceholder.style.display = 'none';
+                
+                bankAccounts.forEach(acc => {
+                    const card = document.createElement('div');
+                    card.classList.add('bank-card');
+                    card.innerHTML = `
+                        <div class="bank-card-header">${acc.displayName}</div>
+                        <div class="bank-card-detail"><strong>Holder:</strong> ${acc.fullName}</div>
+                        <div class="bank-card-detail"><strong>A/C No:</strong> ${acc.accountNumber}</div>
+                        <div class="bank-card-actions">
+                            <button class="btn btn-danger btn-sm delete-bank-btn" data-id="${acc.id}">Delete</button>
+                        </div>
+                    `;
+                    bankAccountSlider.appendChild(card);
+                });
+                bankAccountSlider.querySelectorAll('.delete-bank-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => deleteBankAccount(e.target.dataset.id));
+                });
+                updateSliderNavButtons(); 
+            }
+            
+            sliderPrevBtn.addEventListener('click', () => {
+                bankAccountSlider.scrollBy({ left: -280, behavior: 'smooth' }); 
+                setTimeout(updateSliderNavButtons, 350); 
+            });
+
+            sliderNextBtn.addEventListener('click', () => {
+                bankAccountSlider.scrollBy({ left: 280, behavior: 'smooth' });
+                setTimeout(updateSliderNavButtons, 350);
+            });
+            
+            bankAccountSlider.addEventListener('scroll', updateSliderNavButtons);
+            window.addEventListener('resize', updateSliderNavButtons);
+
+
+            function updateSliderNavButtons() {
+                if (!bankAccountSlider) return; 
+                const isScrollable = bankAccountSlider.scrollWidth > bankAccountSlider.clientWidth;
+                const cards = bankAccountSlider.children;
+                let visibleCards = 0;
+                if (cards.length > 0 && cards[0].classList.contains('bank-card')) { // check if first child is a card
+                     visibleCards = Math.floor(bankAccountSlider.clientWidth / (cards[0].offsetWidth + parseFloat(getComputedStyle(cards[0]).marginRight)));
+                }
+
+
+                if (!isScrollable || bankAccounts.length <= visibleCards ) { 
+                    sliderPrevBtn.style.display = 'none';
+                    sliderNextBtn.style.display = 'none';
+                    return;
+                }
+                
+                const scrollLeft = bankAccountSlider.scrollLeft;
+                const scrollWidth = bankAccountSlider.scrollWidth;
+                const clientWidth = bankAccountSlider.clientWidth;
+
+                sliderPrevBtn.style.display = scrollLeft > 5 ? 'flex' : 'none'; 
+                sliderNextBtn.style.display = scrollLeft < (scrollWidth - clientWidth - 5) ? 'flex' : 'none'; 
+            }
+
+
+            function populateBankAccountDropdown() {
+                const currentSelection = bankAccountSelect.value;
+                bankAccountSelect.innerHTML = '<option value="">-- Select Bank Account --</option>';
+                bankAccounts.forEach(acc => {
+                    const option = document.createElement('option');
+                    option.value = acc.id;
+                    option.textContent = `${acc.displayName} (...${acc.accountNumber.slice(-4)})`;
+                    bankAccountSelect.appendChild(option);
+                });
+                if (bankAccounts.some(acc => acc.id === currentSelection)) {
+                    bankAccountSelect.value = currentSelection;
+                }
+                 bankAccountSelect.disabled = bankAccounts.length === 0;
+                 if(bankAccounts.length === 0 && modeInput.value === 'online'){
+                    bankAccountSelect.innerHTML = '<option value="">-- No bank accounts added --</option>';
+                 }
+            }
+
+            modeInput.addEventListener('change', () => {
+                if (modeInput.value === 'online') {
+                    bankAccountSelectorDiv.style.display = 'block';
+                    populateBankAccountDropdown(); // Repopulate and set disabled state correctly
+                } else {
+                    bankAccountSelectorDiv.style.display = 'none';
+                }
+            });
+
+            // --- TRANSACTION MANAGEMENT ---
+             function getAccountBalance(accountId) {
+                let balance = 0;
+                transactions.forEach(t => {
+                    if (t.accountId === accountId) {
+                        if (t.type === 'credit') balance += t.amount;
+                        else if (t.type === 'debit') balance -= t.amount;
+                    }
+                });
+                return balance;
+            }
+
+            function addTransaction() {
+                const type = transTypeInput.value;
+                const amount = parseFloat(amountInput.value);
+                const mode = modeInput.value;
+                const note = noteInput.value.trim();
+                let accountId = null;
+                let accountDisplayName = null;
+
+                if (isNaN(amount) || amount <= 0) { alert("Valid positive amount required."); return; }
+                if (mode === 'online') {
+                    if (bankAccounts.length === 0) { alert("No bank accounts. Add one first or select 'Cash' mode."); return; }
+                    if (!bankAccountSelect.value) { alert("Please select a bank account for online transaction."); return; }
+                    accountId = bankAccountSelect.value;
+                    const selectedBank = bankAccounts.find(acc => acc.id === accountId);
+                    if (!selectedBank) { alert("Selected bank account not found. Please refresh or check accounts."); return;} // Should not happen
+                    accountDisplayName = selectedBank.displayName;
+
+                    if (type === 'debit') {
+                        const currentBankBalance = getAccountBalance(accountId);
+                        if (currentBankBalance - amount < 0) {
+                            alert(`Insufficient funds in ${selectedBank.displayName} (...${selectedBank.accountNumber.slice(-4)}).\nAvailable: ₹${currentBankBalance.toFixed(2)}.\nCannot debit ₹${amount.toFixed(2)}.`);
+                            return;
+                        }
+                    }
+                }
+                const date = new Date().toISOString();
+                transactions.push({ date, type, amount, mode, note, accountId, accountDisplayName });
+                transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+                saveToLocalStorage();
+                updateUI();
+                clearInputFields();
+                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} of ₹${amount.toFixed(2)} recorded.`);
+            }
+            
+            function deleteTransaction(originalIndex) { 
+                if (confirm("Are you sure you want to delete this transaction?")) {
+                    transactions.splice(originalIndex, 1);
+                    saveToLocalStorage();
+                    updateUI();
+                }
+            }
+
+
+            function clearInputFields() {
+                amountInput.value = ''; noteInput.value = ''; transTypeInput.value = 'credit'; modeInput.value = 'cash';
+                bankAccountSelect.value = '';
+                modeInput.dispatchEvent(new Event('change')); // Trigger mode change to hide/show bank select
+            }
+
+            // --- INTER-ACCOUNT TRANSFER ---
+            function populateTransferAccountDropdowns() {
+                transferFromAccountSelect.innerHTML = '<option value="">-- Select From Account --</option>';
+                transferToAccountSelect.innerHTML = '<option value="">-- Select To Account --</option>';
+
+                if (bankAccounts.length < 2) {
+                    accountTransferFormGrid.style.display = 'none';
+                    transferInfoMessage.textContent = 'You need at least two bank accounts to make a transfer.';
+                    transferInfoMessage.style.display = 'block';
+                    return;
+                }
+                
+                accountTransferFormGrid.style.display = 'grid';
+                transferInfoMessage.style.display = 'none';
+
+                bankAccounts.forEach(acc => {
+                    const optionText = `${acc.displayName} (...${acc.accountNumber.slice(-4)})`;
+                    const fromOption = new Option(optionText, acc.id);
+                    const toOption = new Option(optionText, acc.id);
+                    transferFromAccountSelect.add(fromOption);
+                    transferToAccountSelect.add(toOption);
+                });
+            }
+
+            function handleTransfer() {
+                const fromAccountId = transferFromAccountSelect.value;
+                const toAccountId = transferToAccountSelect.value;
+                const amount = parseFloat(transferAmountInput.value);
+
+                if (!fromAccountId || !toAccountId) { alert("Please select both 'From' and 'To' accounts."); return; }
+                if (fromAccountId === toAccountId) { alert("'From' and 'To' accounts cannot be the same."); return; }
+                if (isNaN(amount) || amount <= 0) { alert("Please enter a valid positive amount for transfer."); return; }
+
+                const fromAccount = bankAccounts.find(acc => acc.id === fromAccountId);
+                const toAccount = bankAccounts.find(acc => acc.id === toAccountId);
+
+                if (!fromAccount || !toAccount) { alert("Invalid account selection. Please try again."); return; }
+
+                const fromAccountBalance = getAccountBalance(fromAccountId);
+                if (fromAccountBalance < amount) {
+                    alert(`Insufficient funds in ${fromAccount.displayName} (...${fromAccount.accountNumber.slice(-4)}).\nAvailable: ₹${fromAccountBalance.toFixed(2)}.\nCannot transfer ₹${amount.toFixed(2)}.`);
+                    return;
+                }
+
+                const date = new Date().toISOString();
+                const transferId = generateId(); // Optional: to link transactions if needed later
+
+                // Debit from 'From Account'
+                transactions.push({
+                    date,
+                    type: 'debit',
+                    amount,
+                    mode: 'online',
+                    note: `Transfer to ${toAccount.displayName} (...${toAccount.accountNumber.slice(-4)})`,
+                    accountId: fromAccountId,
+                    accountDisplayName: fromAccount.displayName,
+                    transferId // Optional
+                });
+                // Credit to 'To Account'
+                transactions.push({
+                    date, 
+                    type: 'credit',
+                    amount,
+                    mode: 'online',
+                    note: `Transfer from ${fromAccount.displayName} (...${fromAccount.accountNumber.slice(-4)})`,
+                    accountId: toAccountId,
+                    accountDisplayName: toAccount.displayName,
+                    transferId // Optional
+                });
+
+                transactions.sort((a, b) => { // Sort by date, then by type (credit after debit for same timestamp if needed)
+                    const dateA = new Date(a.date).getTime();
+                    const dateB = new Date(b.date).getTime();
+                    if (dateA !== dateB) return dateA - dateB;
+                    if (a.transferId === b.transferId && a.transferId) { // For transfers, ensure debit comes before credit if same timestamp
+                        return a.type === 'debit' ? -1 : 1;
+                    }
+                    return 0;
+                });
+                saveToLocalStorage();
+                updateUI();
+                transferAmountInput.value = '';
+                transferFromAccountSelect.value = '';
+                transferToAccountSelect.value = '';
+                alert(`₹${amount.toFixed(2)} transferred successfully from ${fromAccount.displayName} to ${toAccount.displayName}.`);
+            }
+
+
+            // --- UI UPDATES ---
+            function updateUI() {
+                renderBankAccountCards();
+                populateBankAccountDropdown(); 
+                populateTransferAccountDropdowns();
+                updateSummary();
+                renderTransactionViews(); 
+                modeInput.dispatchEvent(new Event('change')); // Ensures bank select visibility is correct
+                updateSliderNavButtons();
+            }
+
+            function updateSummary() {
+                let totalOverall = 0;
+                const credited = { cash: 0, online: 0 };
+                const debited = { cash: 0, online: 0 };
+                const bankBalances = {};
+
+                // Initialize balances for all existing bank accounts
+                bankAccounts.forEach(acc => bankBalances[acc.id] = { 
+                    balance: 0, 
+                    displayName: acc.displayName, 
+                    accountNumber: acc.accountNumber // Store accNum for display
+                });
+
+                transactions.forEach(trans => {
+                    const amount = trans.amount;
+                    if (trans.type === "credit") {
+                        totalOverall += amount;
+                        if (trans.mode === "cash") credited.cash += amount;
+                        else if (trans.mode === "online") {
+                            credited.online += amount;
+                            if (trans.accountId && bankBalances[trans.accountId]) { // Check if account still exists
+                                bankBalances[trans.accountId].balance += amount;
+                            }
+                        }
+                    } else if (trans.type === "debit") {
+                        totalOverall -= amount;
+                        if (trans.mode === "cash") debited.cash += amount;
+                        else if (trans.mode === "online") {
+                            debited.online += amount;
+                            if (trans.accountId && bankBalances[trans.accountId]) { // Check if account still exists
+                                bankBalances[trans.accountId].balance -= amount;
+                            }
+                        }
+                    }
+                });
+
+                creditedCashSpan.textContent = `₹${credited.cash.toFixed(2)}`;
+                creditedOnlineSpan.textContent = `₹${credited.online.toFixed(2)}`;
+                debitedCashSpan.textContent = `₹${debited.cash.toFixed(2)}`;
+                debitedOnlineSpan.textContent = `₹${debited.online.toFixed(2)}`;
+                availableCashSpan.textContent = `₹${(credited.cash - debited.cash).toFixed(2)}`;
+                
+                let totalOnlineBalance = 0;
+                Object.values(bankBalances).forEach(b => totalOnlineBalance += b.balance);
+                availableOnlineSpan.textContent = `₹${totalOnlineBalance.toFixed(2)}`;
+                
+                totalBalanceSpan.textContent = `₹${((credited.cash - debited.cash) + totalOnlineBalance).toFixed(2)}`;
+
+
+                bankBalancesList.innerHTML = '';
+                if (bankAccounts.length === 0) {
+                    bankBalancesList.innerHTML = '<li>No bank accounts to show balances for.</li>';
+                } else {
+                    bankAccounts.forEach(acc => { // Iterate through current bankAccounts to ensure order and inclusion
+                        const balanceData = bankBalances[acc.id]; // Get calculated balance
+                        const li = document.createElement('li');
+                        // Display A/C number's last 4 digits
+                        li.innerHTML = `${balanceData.displayName} (...${balanceData.accountNumber.slice(-4)}): <strong>₹${balanceData.balance.toFixed(2)}</strong>`;
+                        bankBalancesList.appendChild(li);
+                    });
+                }
+            }
+
+            function renderTransactionViews() {
+                const transactionTableBodyDesktop = document.getElementById('transactionTableBody');
+                const transactionListMobileDiv = document.getElementById('transactionListMobile');
+                const noTransactionsPlaceholderEl = document.getElementById('noTransactionsPlaceholder');
+                
+                transactionTableBodyDesktop.innerHTML = '';
+                transactionListMobileDiv.innerHTML = '';
+
+                if (transactions.length === 0) {
+                    noTransactionsPlaceholderEl.style.display = 'block';
+                    return;
+                }
+                noTransactionsPlaceholderEl.style.display = 'none';
+
+                [...transactions].reverse().forEach((trans, loopIndex) => {
+                    const originalIndex = transactions.length - 1 - loopIndex;
+                    const dateFormatted = new Date(trans.date).toLocaleString();
+                    const typeFormatted = trans.type.charAt(0).toUpperCase() + trans.type.slice(1);
+                    const amountFormatted = `₹${trans.amount.toFixed(2)}`;
+                    const modeFormatted = trans.mode.charAt(0).toUpperCase() + trans.mode.slice(1);
+                    
+                    let bankDisplay = 'N/A';
+                    if (trans.mode === 'online') {
+                        if (trans.accountId) {
+                            const bank = bankAccounts.find(b => b.id === trans.accountId);
+                            bankDisplay = bank ? `${bank.displayName} (...${bank.accountNumber.slice(-4)})` : (trans.accountDisplayName || 'Unknown/Deleted Account');
+                        } else {
+                             // Handle cases where accountId might be null but accountDisplayName was stored (e.g., after account deletion)
+                             bankDisplay = trans.accountDisplayName || 'Unknown/Deleted Account';
+                        }
+                    }
+
+
+                    // Desktop Table Row
+                    const row = transactionTableBodyDesktop.insertRow();
+                    row.insertCell().textContent = dateFormatted;
+                    row.insertCell().textContent = typeFormatted;
+                    const amountCellDesktop = row.insertCell();
+                    amountCellDesktop.textContent = amountFormatted;
+                    amountCellDesktop.style.color = trans.type === 'credit' ? 'var(--color-secondary)' : 'var(--color-danger)';
+                    row.insertCell().textContent = modeFormatted;
+                    row.insertCell().textContent = bankDisplay;
+                    const noteCellDesktop = row.insertCell();
+                    noteCellDesktop.textContent = trans.note;
+                    noteCellDesktop.style.cssText = 'word-break: break-word; max-width: 150px;'; // Keep or adjust as needed
+                    const actionCellDesktop = row.insertCell();
+                    const deleteBtnDesktop = document.createElement('button');
+                    deleteBtnDesktop.textContent = 'Delete';
+                    deleteBtnDesktop.classList.add('btn', 'btn-danger', 'btn-sm');
+                    deleteBtnDesktop.onclick = () => deleteTransaction(originalIndex);
+                    actionCellDesktop.appendChild(deleteBtnDesktop);
+
+                    // Mobile Transaction Card
+                    const cardMobile = document.createElement('div');
+                    cardMobile.classList.add('transaction-card-mobile');
+                    let amountClass = trans.type === 'credit' ? 'credit' : 'debit';
+                    cardMobile.innerHTML = `
+                        <div class="trans-row"><span class="trans-label">Date:</span><span class="trans-value">${dateFormatted}</span></div>
+                        <div class="trans-row"><span class="trans-label">Type:</span><span class="trans-value">${typeFormatted}</span></div>
+                        <div class="trans-row"><span class="trans-label">Amount:</span><span class="trans-value ${amountClass}">${amountFormatted}</span></div>
+                        <div class="trans-row"><span class="trans-label">Mode:</span><span class="trans-value">${modeFormatted}</span></div>
+                        ${trans.mode === 'online' ? `<div class="trans-row"><span class="trans-label">Bank:</span><span class="trans-value">${bankDisplay}</span></div>` : ''}
+                        ${trans.note ? `<div class="trans-note">${trans.note}</div>` : ''}
+                        <div class="trans-actions"><button class="btn btn-danger btn-sm delete-trans-mobile-btn" data-index="${originalIndex}">Delete</button></div>
+                    `;
+                    transactionListMobileDiv.appendChild(cardMobile);
+                });
+
+                transactionListMobileDiv.querySelectorAll('.delete-trans-mobile-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const indexToDelete = parseInt(e.target.dataset.index, 10);
+                        deleteTransaction(indexToDelete);
+                    });
+                });
+            }
+
+
+            // --- DATA IMPORT/EXPORT ---
+            function handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    let importedData;
+                    try {
+                        if (file.name.endsWith('.json')) {
+                            importedData = JSON.parse(content);
+                            if (importedData.hasOwnProperty('transactions') && importedData.hasOwnProperty('bankAccounts')) {
+                                bankAccounts = importedData.bankAccounts.map(ba => ({...ba, id: ba.id || generateId()})); // Ensure IDs
+                                transactions = importedData.transactions.map(t => ({...t, amount: parseFloat(t.amount)}));
+                            } else if (Array.isArray(importedData)) { // Support for old format (transactions only)
+                                transactions = importedData.map(t => ({...t, amount: parseFloat(t.amount)}));
+                                bankAccounts = []; // Clear bank accounts if importing old format
+                                alert("Old JSON format (transactions only) loaded. Bank accounts were not part of this file and have been cleared if any existed.");
+                            } else { throw new Error("Invalid JSON structure. Expected {transactions: [], bankAccounts: []} or an array of transactions."); }
+                        } else if (file.name.endsWith('.csv')) {
+                            const lines = content.trim().split('\n');
+                            const headers = lines[0].toLowerCase().split(',').map(h => h.trim().replace(/"/g, ''));
+                            const tempTransactions = [];
+                            // Required headers for basic transaction
+                            const dateIdx=headers.indexOf("date"), typeIdx=headers.indexOf("type"), amtIdx=headers.indexOf("amount"), modeIdx=headers.indexOf("mode");
+                            // Optional bank details headers
+                            const accNumIdx=headers.indexOf("bankaccountnumber"), dispNameIdx=headers.indexOf("bankdisplayname"), fullNameIdx=headers.indexOf("bankholderfullname"), noteIdx=headers.indexOf("note");
+
+                            if ([dateIdx,typeIdx,amtIdx,modeIdx].some(i=>i===-1)) throw new Error("CSV missing required headers: date, type, amount, mode.");
+                            
+                            for (let i = 1; i < lines.length; i++) {
+                                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
+                                if (values.length < Math.max(dateIdx,typeIdx,amtIdx,modeIdx) + 1) continue; // Skip malformed rows
+
+                                const trans = { 
+                                    date:values[dateIdx], 
+                                    type:values[typeIdx].toLowerCase(), // Ensure type is lowercase
+                                    amount:parseFloat(values[amtIdx]), 
+                                    mode:values[modeIdx].toLowerCase(), // Ensure mode is lowercase
+                                    note:noteIdx>-1 && values[noteIdx] ? values[noteIdx] : "", 
+                                    accountId:null, 
+                                    accountDisplayName:null 
+                                };
+
+                                if (trans.mode==='online' && accNumIdx>-1 && values[accNumIdx]) {
+                                    let bank = bankAccounts.find(b=>b.accountNumber===values[accNumIdx]);
+                                    if (!bank) { // Auto-create bank account if it doesn't exist
+                                        bank = {
+                                            id:generateId(),
+                                            accountNumber:values[accNumIdx],
+                                            displayName:(dispNameIdx>-1 && values[dispNameIdx] ? values[dispNameIdx] : `CSV Import ${values[accNumIdx].slice(-4)}`),
+                                            fullName:(fullNameIdx>-1 && values[fullNameIdx] ? values[fullNameIdx] : 'Imported via CSV')
+                                        }; 
+                                        bankAccounts.push(bank); 
+                                    }
+                                    // Link transaction to the (possibly new) bank account
+                                    trans.accountId=bank.id; 
+                                    trans.accountDisplayName=bank.displayName; 
+                                }
+                                // Validate essential parts of the transaction
+                                if (!isNaN(trans.amount) && trans.date && (trans.type === 'credit' || trans.type === 'debit') && (trans.mode === 'cash' || trans.mode === 'online')) {
+                                    tempTransactions.push(trans);
+                                } else {
+                                    console.warn("Skipped invalid CSV row due to missing/invalid essential data: ", lines[i]);
+                                }
+                            }
+                            transactions = tempTransactions;
+                            alert("CSV data loaded. Bank accounts may have been auto-created if not found.");
+                        } else { alert("Unsupported file type. Please use .json or .csv"); return; }
+                        
+                        transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        saveToLocalStorage(); updateUI();
+                        alert("Data loaded successfully!");
+                    } catch (error) { alert("Error parsing file: " + error.message); console.error(error); }
+                    finally { fileInput.value = ''; } // Clear file input
+                };
+                reader.readAsText(file);
+            }
+
+            function exportData(format) {
+                if (transactions.length === 0 && bankAccounts.length === 0) { alert("No data to export."); return; }
+                let dataStr, filename, mimeType;
+                const timestamp = new Date().toISOString().slice(0,19).replace(/:/g,'-').replace(/T/g,'_');
+                if (format === 'json') {
+                    dataStr = JSON.stringify({bankAccounts, transactions}, null, 2);
+                    filename = `finance_data_${timestamp}.json`; mimeType = 'application/json;charset=utf-8;';
+                } else if (format === 'csv') {
+                    const header = ["date","type","amount","mode","bankAccountNumber","bankDisplayName","bankHolderFullName","note"];
+                    const rows = transactions.map(t => {
+                        let bAccNum='',bDispName='',bFullName='';
+                        if (t.mode==='online'&&t.accountId) { 
+                            const b=bankAccounts.find(x=>x.id===t.accountId); 
+                            if(b){
+                                bAccNum=b.accountNumber;
+                                bDispName=b.displayName;
+                                bFullName=b.fullName;
+                            } else {
+                                // If account was deleted but name stored with transaction
+                                bDispName=t.accountDisplayName||'Unknown/Deleted';
+                            }
+                        } else if(t.mode==='online'&&t.accountDisplayName) { 
+                            // Fallback if accountId is null but displayName was captured (e.g. old data or deleted account)
+                            bDispName=t.accountDisplayName;
+                        }
+                        return [t.date,t.type,t.amount,t.mode,bAccNum,bDispName,bFullName,t.note].map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',');
+                    });
+                    dataStr = [header.join(','), ...rows].join('\n');
+                    filename = `finance_data_${timestamp}.csv`; mimeType = 'text/csv;charset=utf-8;';
+                } else return;
+                const blob = new Blob([dataStr],{type:mimeType});
+                const link = document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=filename;
+                document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href);
+            }
+
+            function clearAllData() {
+                if (confirm("This will clear ALL transaction and bank account data permanently. Are you sure?")) {
+                    transactions = []; bankAccounts = [];
+                    saveToLocalStorage(); updateUI();
+                    alert("All data has been cleared.");
+                }
+            }
+
+            // --- Event Listeners ---
+            addTransactionBtn.addEventListener('click', addTransaction);
+            addBankAccountBtn.addEventListener('click', addBankAccount);
+            executeTransferBtn.addEventListener('click', handleTransfer);
+            fileInput.addEventListener('change', handleFileUpload);
+            exportCSVBtn.addEventListener('click', () => exportData('csv'));
+            exportJSONBtn.addEventListener('click', () => exportData('json'));
+            clearDataBtn.addEventListener('click', clearAllData);
+
+            // --- Initial Load ---
+            loadFromLocalStorage();
+            updateUI();
+        });
+    </script>
+</body>
+
+</html>
