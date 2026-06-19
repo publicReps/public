@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Information Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
+        }
+
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+            font-size: 14px;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: #f0f0f5;
+            color: #667eea;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .no-results {
+            padding: 10px 12px;
+            color: #999;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-download {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-download:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-clear {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-clear:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-all-disabled {
+            display: none;
+        }
+
+        .records-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .records-title {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .record-item {
+            background: #f5f5f5;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-size: 14px;
+        }
+
+        .record-item strong {
+            color: #667eea;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Candidate Information</h1>
+        <p class="subtitle">Fill in the form and manage candidate records</p>
+
+        <div class="success-message" id="successMessage">Record saved successfully!</div>
+
+        <div class="records-section">
+            <div class="records-title">Saved Records (<span id="recordCount">0</span>)</div>
+        </div>
+
+        <form id="candidateForm">
+            <div class="form-group">
+                <label for="uniqueId">Unique ID *</label>
+                <input type="text" id="uniqueId" name="uniqueId" placeholder="Enter unique ID" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="village">Village *</label>
+                <input type="text" id="village" name="village" placeholder="Enter village name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="state">State *</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="state" name="state" placeholder="Type state name..." required>
+                    <div class="autocomplete-dropdown" id="stateDropdown"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="district">District *</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="district" name="district" placeholder="Type district name..." required>
+                    <div class="autocomplete-dropdown" id="districtDropdown"></div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-submit">Save Record</button>
+                <button type="button" class="btn-download" id="downloadBtn">Download CSV</button>
+                <button type="button" class="btn-clear" id="clearBtn">Clear All</button>
+            </div>
+        </form>
+
+        <div class="records-section">
+            <div class="records-title">Saved Records (<span id="recordCount">0</span>)</div>
+            <div id="recordsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'candidateRecords';
+
+        // Indian States
+        const STATES = [
+            'Arunachal Pradesh', 'Assam', 'Bihar'
+        ];
+
+        // Indian Districts (Common ones)
+        const DISTRICTS = [
+           'Nagaon', 'Morigaon'
+        ];
+
+        // Load records on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRecords();
+            setupAutocomplete();
+        });
+
+        // Form submission
+        document.getElementById('candidateForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            addRecord();
+        });
+
+        // Download button
+        document.getElementById('downloadBtn').addEventListener('click', downloadCSV);
+
+        // Clear all button
+        document.getElementById('clearBtn').addEventListener('click', clearAllRecords);
+
+        function setupAutocomplete() {
+            const districtInput = document.getElementById('district');
+            const stateInput = document.getElementById('state');
+            const districtDropdown = document.getElementById('districtDropdown');
+            const stateDropdown = document.getElementById('stateDropdown');
+
+            // District autocomplete
+            districtInput.addEventListener('input', function () {
+                const value = this.value.trim();
+                if (value.length === 0) {
+                    districtDropdown.classList.remove('show');
+                    return;
+                }
+
+                const matches = DISTRICTS.filter(d => 
+                    d.toLowerCase().includes(value.toLowerCase())
+                );
+
+                displayDropdown(districtDropdown, matches, value, districtInput);
+            });
+
+            // State autocomplete
+            stateInput.addEventListener('input', function () {
+                const value = this.value.trim();
+                if (value.length === 0) {
+                    stateDropdown.classList.remove('show');
+                    return;
+                }
+
+                const matches = STATES.filter(s => 
+                    s.toLowerCase().includes(value.toLowerCase())
+                );
+
+                displayDropdown(stateDropdown, matches, value, stateInput);
+            });
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('#district') && !e.target.closest('#districtDropdown')) {
+                    districtDropdown.classList.remove('show');
+                }
+                if (!e.target.closest('#state') && !e.target.closest('#stateDropdown')) {
+                    stateDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        function displayDropdown(dropdown, matches, searchValue, inputField) {
+            if (matches.length === 0) {
+                dropdown.innerHTML = `<div class="no-results">No matches found - Custom input allowed</div>`;
+            } else {
+                dropdown.innerHTML = matches.slice(0, 10).map(match => 
+                    `<div class="autocomplete-item" data-value="${match}">${match}</div>`
+                ).join('');
+
+                // Add click handlers
+                dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        inputField.value = this.dataset.value;
+                        dropdown.classList.remove('show');
+                    });
+                });
+            }
+
+            dropdown.classList.add('show');
+        }
+
+        function addRecord() {
+            const record = {
+                uniqueId: document.getElementById('uniqueId').value.trim(),
+                village: document.getElementById('village').value.trim(),
+                district: document.getElementById('district').value.trim(),
+                state: document.getElementById('state').value.trim(),
+                timestamp: new Date().toLocaleString()
+            };
+
+            // Check for duplicate unique ID
+            const records = getRecords();
+            if (records.some(r => r.uniqueId === record.uniqueId)) {
+                alert('A record with this Unique ID already exists!');
+                return;
+            }
+
+            records.push(record);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            setTimeout(() => successMsg.classList.remove('show'), 3000);
+
+            // Reset form
+            document.getElementById('candidateForm').reset();
+
+            // Reload records display
+            loadRecords();
+        }
+
+        function getRecords() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function loadRecords() {
+            const records = getRecords();
+            const container = document.getElementById('recordsContainer');
+            const countSpan = document.getElementById('recordCount');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const clearBtn = document.getElementById('clearBtn');
+
+            countSpan.textContent = records.length;
+
+            if (records.length === 0) {
+                container.innerHTML = '<div class="empty-message">No records saved yet. Add one to get started!</div>';
+                downloadBtn.disabled = true;
+                clearBtn.disabled = true;
+            } else {
+                container.innerHTML = records.map((record, index) => `
+                    <div class="record-item">
+                        <strong>ID:</strong> ${escapeHtml(record.uniqueId)} | 
+                        <strong>Village:</strong> ${escapeHtml(record.village)} | 
+                        <strong>District:</strong> ${escapeHtml(record.district)} | 
+                        <strong>State:</strong> ${escapeHtml(record.state)}
+                    </div>
+                `).join('');
+                downloadBtn.disabled = false;
+                clearBtn.disabled = false;
+            }
+        }
+
+        function downloadCSV() {
+            const records = getRecords();
+            if (records.length === 0) {
+                alert('No records to download!');
+                return;
+            }
+
+            // CSV headers
+            const headers = ['Unique ID', 'Village', 'District', 'State', 'Timestamp'];
+
+            // Convert records to CSV format
+            const csvContent = [
+                headers.join(','),
+                ...records.map(record =>
+                    [
+                        escapeCsvField(record.uniqueId),
+                        escapeCsvField(record.village),
+                        escapeCsvField(record.district),
+                        escapeCsvField(record.state),
+                        escapeCsvField(record.timestamp)
+                    ].join(',')
+                )
+            ].join('\n');
+
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `candidates_${new Date().getTime()}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearAllRecords() {
+            if (confirm('Are you sure you want to delete all records? This action cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                document.getElementById('candidateForm').reset();
+                loadRecords();
+                alert('All records have been deleted!');
+            }
+        }
+
+        function escapeCsvField(field) {
+            if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+                return `"${field.replace(/"/g, '""')}"`;
+            }
+            return field;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library Mitali Assistant</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #4facfe, #00f2fe);
+        color: #333;
+        text-align: center;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+        color: #2c3e50;
+    }
+
+    p {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .features {
+        text-align: left;
+        margin: 20px 0;
+    }
+
+    .features li {
+        margin: 10px 0;
+    }
+
+    .download-btn {
+        background: #27ae60;
+        color: white;
+        padding: 15px 25px;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .download-btn:hover {
+        background: #219150;
+    }
+
+    .status {
+        margin-top: 15px;
+        font-weight: bold;
+        color: #2980b9;
+    }
+
+    footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #777;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📚 Rasaraj Lakshminath Bezbaruah Central Library Chatbot Assistant | Raha College |</h1>
+    <p>
+        Your smart assistant for accessing library resources, answering queries,
+        <!-- <span>and helping students find books instantly.</span> -->
+    </p>
+
+    <h3>✨ Features</h3>
+    <ul class="features">
+        <!-- <li>🔍 Search books quickly</li> -->
+        <li>💬 Ask questions anytime</li>
+        <!-- <li>📖 Get recommendations</li> -->
+        <li>Get user menu</li>
+        <li>⏱️ Save time with instant replies</li>
+    </ul>
+
+    <button class="download-btn" onclick="startDownload()">
+        ⬇ Download Now
+    </button>
+
+    <div class="status" id="status"></div>
+
+    <footer>
+        © 2026 College Library System
+    </footer>
+</div>
+
+<script>
+function startDownload() {
+    const status = document.getElementById("status");
+
+    status.innerHTML = "Preparing download...";
+
+    setTimeout(() => {
+        status.innerHTML = "Downloading...";
+    }, 1000);
+
+    setTimeout(() => {
+        status.innerHTML = "Download complete! ✅";
+        
+        // Simulated file download
+        const link = document.createElement("a");
+        link.href = "https://github.com/saysatyajit123/public/releases/download/v1.0/Mitali_v1.0.apk"; // Replace with actual file link
+        // link.download = "LibraryChatbotAssistant.zip";
+        link.click();
+    }, 2500);
+}
+</script>
+
+</body>
+</html>
