@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Science Wall Magazine</title>
+    <style>
+        /* body {
+            margin: 0;
+            padding-bottom: 30px;
+            font-family: sans-serif;
+            background: rgb(238,174,202);
+            background: linear-gradient(90deg, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+        } */
+        /* --- Option 1: Softer Vertical Gradient --- */
+        body {
+            /* ... other styles ... */
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%); /* Light Grey tones */
+        }
+
+        /* Center container elements like h1, p description, video */
+        .centered-content {
+            width: 90%; /* Control width */
+            max-width: 800px; /* Max width for larger screens */
+            margin: 20px auto; /* Center block elements */
+            text-align: center; /* Center inline content like text within */
+        }
+
+        h1 {
+            background: #121FCF;
+            background: linear-gradient(to right, #121FCF 0%, #CF1512 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px; /* Spacing */
+             text-align: center; /* Ensure h1 text is centered */
+        }
+
+        /* Style for the main description paragraph */
+        .description p {
+            text-align: justify; /* Justify text for better paragraph flow */
+            line-height: 1.6;
+            color: #333; /* Slightly darker text for description */
+        }
+
+        video {
+            width: 100%; /* Make video take full width of its container */
+            max-width: 800px; /* Max width consistent with other content */
+            display: block; /* Remove extra space below video */
+            margin: 20px auto; /* Center video */
+            border: 1px solid #ccc; /* Optional: add a subtle border */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: add shadow */
+        }
+
+        /* Read more functionality styles */
+        .more { display: none; } /* Hide extra content initially */
+
+        .read-more-btn { /* Use a class for all read more buttons */
+            display: block; /* Make button block level */
+            margin: 10px auto 0 auto; /* Center button, remove bottom margin here */
+            padding: 8px 15px; /* Add padding */
+            font-size: 0.9em;
+            background-color: #4a4a8a; /* Updated color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+        .read-more-btn:hover {
+            background-color: #3a3a7a;
+        }
+
+        /* Article specific styles */
+        .articles-container {
+            margin-top: 40px; /* Space above articles section */
+        }
+
+        .student-article {
+            background-color: rgba(255, 255, 255, 0.85); /* Slightly less transparent */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px auto; /* Increased margin between articles */
+            width: 90%; /* Control width */
+            max-width: 750px; /* Slightly narrower than main content */
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08); /* Subtle shadow */
+        }
+
+        /* Style for Department Header */
+        .article-department {
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #6a5acd; /* Slate blue color for department */
+            margin: 0 0 8px 0; /* Spacing below department */
+            text-transform: uppercase; /* Optional: make it uppercase */
+            letter-spacing: 0.5px; /* Optional: add letter spacing */
+        }
+
+        .student-article h2 {
+            margin-top: 0; /* Remove top margin as department provides spacing */
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center; /* Center article titles */
+            font-size: 1.4em; /* Slightly larger title */
+        }
+
+        .student-article p:not(.article-department):not(.article-author) { /* Target only content paragraphs */
+            text-align: left; /* Align article text left for readability */
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 10px; /* Ensure space before button */
+        }
+
+        /* Style for Author Name */
+        .article-author {
+            text-align: right;
+            font-size: 0.85em;
+            font-style: italic;
+            color: #777; /* Grey color for author */
+            margin: 15px 0 0 0; /* Add space above the author line */
+            padding-top: 10px; /* Add padding above */
+            border-top: 1px dashed #eee; /* Optional: separator line */
+        }
+
+        /* Ensure spans inside article paragraphs behave correctly */
+         .student-article p .dots,
+         .student-article p .more {
+             display: inline; /* Make sure they flow with text */
+         }
+         .student-article p .more {
+             display: none; /* Keep hidden part hidden initially */
+         }
+
+    </style>
+</head>
+<body>
+    <div class="centered-content">
+        <h1>Science Stream Wall Magazine Description<sub><a href="contribute.html" data-tooltip="how are you">2025</a></sub></h1>
+        <div class="description"> <!-- Wrapper for description -->
+            <p>The Science Stream Wall Magazine is an engaging platform designed to showcase the latest discoveries, innovations, and creative insights in the field of science. It serves as a medium for students to express their curiosity and knowledge through articles, research summaries, infographics, and creative pieces related to various scientific disciplines such as Physics, Chemistry, Biology, Mathematics, and Computer Science.<span class="dots">...</span><span class="more"> This magazine fosters a culture of scientific inquiry, encouraging students to explore real-world applications of scientific concepts, present thought-provoking experiments, and share exciting breakthroughs in technology and environmental science. Through posters, charts, and student-contributed writings, it transforms the school or college walls into a dynamic source of learning and inspiration. By promoting collaborative learning and critical thinking, the Science Stream Wall Magazine not only enhances academic interest but also nurtures a passion for innovation among young minds.</span>
+            <button onclick="toggleContent(this);" class="read-more-btn">Read more</button> <!-- Use class -->
+            </p>
+        </div> <!-- End description wrapper -->
+    </div>
+
+    <!-- Keep video centered -->
+    <video id="myVideo" autoplay muted loop>
+        <source src="science_wall_magazine_raha_college/2.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="articles-container">
+        <article class="student-article">
+            <p class="article-department">Zoology Department</p>
+           <h2>The Wallace Line: Nature’s Invisible Barrier</h2>
+           <p>
+                The Wallace Line, identified by Alfred Russel Wallace in the 19th century, is a biogeographical divide separating Asian and Australasian wildlife. Running between Borneo & Sulawesi and Bali & Lombok, it results from a deep-sea trench, preventing species migration for millions of years. To the<span class="dots">...</span><span class="more"> west, Asian species like tigers and elephants dominate, while to the east, Australian marsupials like tree kangaroos and cockatoos thrive. Wallace’s discovery helped shape biogeography and evolutionary theory. Today, it remains vital for biodiversity and conservation, highlighting the power of natural selection and ecological separation.</span>
+               <button onclick="toggleContent(this);" class="read-more-btn">Read more</button>
+           </p>
+            <p class="article-author">Author: Waisong Terang</p> 
+       </article>
+
+        <!-- Example Student Article 1: Physics -->
+        <article class="student-article">
+            <p class="article-department">Physics Department</p>
+            <h2>Exploring the Mysteries of Black Holes</h2>
+            <p>
+                Black holes are regions in spacetime where gravity is so strong that nothing—no particles or even electromagnetic radiation such as light—can escape from it. The theory of general relativity predicts that a sufficiently compact mass can deform spacetime to form a black hole. The boundary of the region from which no escape is possible is called the event horizon.<span class="dots">...</span><span class="more"> Although the event horizon has an enormous effect on the fate and circumstances of an object crossing it, no locally detectable features appear to be observed. In many ways, a black hole acts like an ideal black body, as it reflects no light. Moreover, quantum field theory in curved spacetime predicts that event horizons emit Hawking radiation, with the same spectrum as a black body of a temperature inversely proportional to its mass. This temperature is on the order of billionths of a kelvin for black holes of stellar mass, making it essentially impossible to observe directly.</span>
+                <button onclick="toggleContent(this);" class="read-more-btn">Read more</button>
+            </p>
+            <p class="article-author">Author: Satyajit  Dekaraja</p>
+        </article>
+
+        <!-- Example Student Article 2: Chemistry -->
+        <article class="student-article">
+             <p class="article-department">Chemistry Department</p>
+            <h2>The Potential of Graphene in Modern Technology</h2>
+            <p>
+                Graphene, a single layer of carbon atoms arranged in a honeycomb lattice, is renowned for its extraordinary properties. It's incredibly strong (about 200 times stronger than steel), lightweight, highly conductive of heat and electricity, and nearly transparent. These characteristics make it a promising material for a vast range of applications.<span class="dots">...</span><span class="more"> Researchers are exploring its use in flexible electronics, faster computer chips, advanced batteries, water filtration systems, and even medical sensors. While challenges in mass production and integration remain, the potential impact of graphene on technology is immense, potentially revolutionizing fields from energy storage to electronics. Continued research aims to overcome these hurdles and unlock the full capabilities of this 'wonder material'.</span>
+                <button onclick="toggleContent(this);" class="read-more-btn">Read more</button>
+            </p>
+             <p class="article-author">Author: Tinku Das</p> 
+        </article>
+
+        <!-- Example Student Article 3: Biology -->
+        <article class="student-article">
+            <p class="article-department">Zoology Department</p>
+           <h2>Human Health and Environmental</h2>
+           <p>
+            The health of humans and the environment are intricately linked. A polluted environment can have devastating effects on human health, from respiratory diseases caused by poor air quality to cancer and other illnesses linked to contaminated water and toxic waste. On the other hand, a healthy environment provides<span class="dots">...</span><span class="more"> numerous benefits, including clean air and water, nutritious food, and opportunities for physical activity and mental well-being. Preserving natural habitats, reducing greenhouse gas emissions, and promoting sustainable practices are essential for protecting both human health and the environment. By taking care of the planet, we can also take care of ourselves and future generations.</span>
+            <button onclick="toggleContent(this);" class="read-more-btn">Read more</button>
+           </p>
+            <p class="article-author">Author: Kasturima Devi</p> 
+       </article>
+        
+        <!-- Example Student Article 3: Biology -->
+        <article class="student-article">
+             <p class="article-department">Biology Department</p>
+            <h2>CRISPR-Cas9: Revolutionizing Gene Editing</h2>
+            <p>
+                CRISPR-Cas9 is a powerful gene-editing tool derived from a natural defense mechanism found in bacteria. It allows scientists to make precise modifications to DNA with relative ease and accuracy compared to previous methods. This technology essentially acts like molecular scissors, cutting DNA at specific locations.<span class="dots">...</span><span class="more"> This capability opens up possibilities for treating genetic diseases by correcting faulty genes, developing more resilient crops, and advancing our understanding of fundamental biology. However, the power of CRISPR also raises significant ethical considerations regarding its use, particularly in human germline editing (changes that can be inherited). Ongoing discussions and regulations are crucial to ensure responsible innovation in this rapidly evolving field.</span>
+                <button onclick="toggleContent(this);" class="read-more-btn">Read more</button>
+            </p>
+             <p class="article-author">Author: Unknown</p> 
+        </article>
+
+         <!-- Example Student Article 4: Mathematics -->
+         <article class="student-article">
+             <p class="article-department">Mathematics Department</p>
+            <h2>Mathematics in Nature: The Fibonacci Sequence</h2>
+            <p>
+                The Fibonacci sequence, where each number is the sum of the two preceding ones (0, 1, 1, 2, 3, 5, 8...), appears surprisingly often in the natural world. It can be observed in the arrangement of leaves on a stem, the branching of trees, the fruitlets of a pineapple, the flowering of an artichoke, an uncurling fern, and the arrangement of a pine cone's bracts.<span class="dots">...</span><span class="more"> This pattern, often linked to the Golden Ratio, seems to reflect efficient growth strategies and packing arrangements in biological systems. Studying these mathematical patterns helps us understand the underlying principles governing growth and form in nature, revealing a beautiful intersection between mathematics and biology. It's a testament to the elegant mathematical order that can be found all around us.</span>
+                <button onclick="toggleContent(this);" class="read-more-btn">Read more</button>
+            </p>
+             <p class="article-author">Author: Unknown</p> 
+        </article>
+
+    </div> <!-- End articles-container -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var video = document.getElementById("myVideo");
+            // Autoplay is handled by attributes, but ensure it's muted initially
+
+            // Click listener for fullscreen and unmute
+            video.addEventListener("click", function() {
+                video.muted = false; // Unmute on click
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.mozRequestFullScreen) { // Firefox
+                    video.mozRequestFullScreen();
+                } else if (video.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                    video.webkitRequestFullscreen();
+                } else if (video.msRequestFullscreen) { // IE/Edge
+                    video.msRequestFullscreen();
+                }
+            });
+        });
+
+        // Reusable function for toggling 'Read more'/'Read less' content
+        function toggleContent(button) {
+            // Find the parent <p> tag of the button (the content paragraph)
+            var parentParagraph = button.parentElement;
+            // Check if the parent is a <p> and not one of the specific metadata paragraphs
+            if (parentParagraph && parentParagraph.tagName.toLowerCase() === 'p' && !parentParagraph.classList.contains('article-department') && !parentParagraph.classList.contains('article-author')) {
+                var dots = parentParagraph.querySelector(".dots");
+                var moreText = parentParagraph.querySelector(".more");
+
+                if (dots && moreText) { // Ensure elements exist
+                    if (dots.style.display === "none") {
+                        // If hidden text is shown, hide it
+                        dots.style.display = "inline";
+                        button.innerHTML = "Read more";
+                        moreText.style.display = "none";
+                    } else {
+                        // If hidden text is hidden, show it
+                        dots.style.display = "none";
+                        button.innerHTML = "Read less";
+                        moreText.style.display = "inline";
+                    }
+                } else {
+                    console.error("Could not find .dots or .more span within the paragraph.");
+                }
+            } else {
+                 console.error("Button's parent is not the expected content <p> tag or is missing.");
+            }
+        }
+    </script>
+</body>
+</html>
