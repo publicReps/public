@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+  <meta name="theme-color" content="#007bff">
+  <!-- iOS Web App Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Camera">
+  <!-- Android Web App Support -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="msapplication-TileColor" content="#007bff">
+  <meta name="description" content="Mobile camera app for capturing and downloading photos">
+  <!-- Disable zoom on input focus -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="format-detection" content="email=no">
+  <title>Camera Capture</title>
+  <link rel="stylesheet" href="mview2/style.css">
+  <script defer src="mview2/script.js"></script>
+</head>
+<body>
+  <h2>Camera Photo Capture</h2>
+
+  <div class="controls">
+    <input type="text" id="imgTitle" placeholder="Enter Image Title" inputmode="text">
+    <button id="startBtn" class="btn">Start Camera</button>
+    <button id="toggleBtn" class="btn btn--disabled" disabled>Pause</button>
+    <button id="downloadBtn" class="btn btn--disabled" disabled>Download</button>
+    <button id="cameraBtn" class="btn btn--disabled" disabled title="Back Camera">📷 Back</button>
+    <button id="flashBtn" class="btn btn--disabled" disabled title="Toggle Flash">🔦 Flash Off</button>
+  </div>
+
+  <div class="video-wrap">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="outputCanvas"></canvas>
+  </div>
+</body>
+</html>

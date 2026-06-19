@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Crop and Download</title>
+  <link rel="stylesheet" href="live_cut/styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <video id="video" autoplay playsinline></video>
+    <div class="crop-area" id="crop-area">
+      <div class="resize-handle" id="resize-handle"></div>
+    </div>
+
+    <!-- Camera Start Button -->
+    <button id="startButton">Start Camera</button>
+
+    <!-- Pause/Resume Button -->
+    <button id="pauseButton">Pause</button>
+
+    <!-- Custom File Name Input -->
+    <input type="text" id="customFileName" placeholder="Enter custom file name">
+
+    <!-- Download Button -->
+    <button id="downloadButton" onclick="clearInput()">Download Cropped Image</button>
+  </div>
+
+  <script src="live_cut/script.js"></script>
+</body>
+</html>

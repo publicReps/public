@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passport Auto Crop</title>
+  <script defer src="realtime_ai_crop/face-api.min.js"></script>
+  <script defer src="realtime_ai_crop/script.js"></script>
+  <link rel="stylesheet" href="realtime_ai_crop/style.css">
+</head>
+<body>
+  <h2>Passport Photo Auto Crop</h2>
+
+  <div class="btns">
+    <input type="text" id="imgTitle" placeholder="Enter Image Title">
+    <button id="startBtn">Start Camera</button>
+    <button id="captureBtn" disabled>Capture</button>
+    <button id="downloadBtn" disabled>Download</button>
+  </div>
+
+  <div class="video-wrap">
+    <video id="video" width="720" height="560" autoplay muted></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <canvas id="outputCanvas" style="display:none;"></canvas>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

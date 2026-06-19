@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High Quality Photo Capture</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    text-align: center;
+}
+
+h2 {
+    margin: 10px 0;
+}
+
+video {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-bottom: 3px solid #333;
+}
+
+.container {
+    padding: 10px;
+}
+
+.canvas-box {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+canvas {
+    width: 48%;
+    border-radius: 10px;
+    border: 2px solid #444;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin: 8px 0;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: #007bff;
+    color: white;
+}
+
+button:active {
+    background: #0056b3;
+}
+
+#combineBtn { background: #28a745; }
+#downloadBtn { background: #ff5722; }
+
+#finalCanvas {
+    width: 100%;
+    margin-top: 10px;
+    border: 2px solid #000;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📸 Capture User & ID</h2>
+
+<video id="video" autoplay playsinline></video>
+
+<div class="container">
+
+    <button onclick="captureUser()">👤 Capture User Photo</button>
+    <button onclick="captureID()">🪪 Capture ID Photo</button>
+    <button id="combineBtn" onclick="combineImages()">🔗 Combine Photos</button>
+
+    <div class="canvas-box">
+        <canvas id="userCanvas"></canvas>
+        <canvas id="idCanvas"></canvas>
+    </div>
+
+    <canvas id="finalCanvas"></canvas>
+
+    <button id="downloadBtn" onclick="downloadImage()">⬇️ Download High Quality</button>
+
+</div>
+
+<script>
+let video = document.getElementById("video");
+
+// Start HD rear camera
+navigator.mediaDevices.getUserMedia({
+    video: {
+        facingMode: "environment",
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+    }
+})
+.then(stream => {
+    video.srcObject = stream;
+})
+.catch(err => {
+    alert("Camera access error!");
+});
+
+// Capture User Photo (FULL RESOLUTION)
+function captureUser() {
+    let canvas = document.getElementById("userCanvas");
+    let ctx = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    ctx.drawImage(video, 0, 0);
+}
+
+// Capture ID Photo (FULL RESOLUTION)
+function captureID() {
+    let canvas = document.getElementById("idCanvas");
+    let ctx = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    ctx.drawImage(video, 0, 0);
+}
+
+// Combine both images WITHOUT QUALITY LOSS
+function combineImages() {
+    let userCanvas = document.getElementById("userCanvas");
+    let idCanvas = document.getElementById("idCanvas");
+    let finalCanvas = document.getElementById("finalCanvas");
+    let ctx = finalCanvas.getContext("2d");
+
+    let width = userCanvas.width + idCanvas.width;
+    let height = Math.max(userCanvas.height, idCanvas.height);
+
+    finalCanvas.width = width;
+    finalCanvas.height = height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.drawImage(userCanvas, 0, 0);
+    ctx.drawImage(idCanvas, userCanvas.width, 0);
+}
+
+// Download BEST QUALITY image
+function downloadImage() {
+    let finalCanvas = document.getElementById("finalCanvas");
+
+    let link = document.createElement("a");
+    link.download = "combined_hd.png";
+
+    link.href = finalCanvas.toDataURL("image/png", 1.0);
+    link.click();
+}
+</script>
+
+</body>
+</html>
