@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MSSQL Query Console</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --panel:#fff; --border:#d9dde3; --text:#1b1f24; --muted:#6b7280;
+    --accent:#2563eb; --accent-text:#fff; --err-bg:#fdecec; --err:#b42318;
+    --ok:#067647; --row:#fafbfc; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171a; --panel:#1c2024; --border:#2e343b; --text:#e7eaee; --muted:#9aa3ad;
+      --accent:#3b82f6; --err-bg:#3a1d1d; --err:#ff9a92; --ok:#4ade80; --row:#20252a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171a; --panel:#1c2024; --border:#2e343b; --text:#e7eaee; --muted:#9aa3ad;
+    --accent:#3b82f6; --err-bg:#3a1d1d; --err:#ff9a92; --ok:#4ade80; --row:#20252a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 48px}
+  h1{font-size:18px;margin:0 0 16px;font-weight:600}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:700px){.grid{grid-template-columns:1fr}}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.02em}
+  input,textarea,select{width:100%;max-width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:6px;
+    background:var(--bg);color:var(--text);font-size:13px;font-family:inherit}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  textarea{font-family:var(--mono);min-height:170px;resize:vertical;line-height:1.5}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  button{padding:9px 16px;border:1px solid var(--border);border-radius:6px;background:var(--panel);
+    color:var(--text);font-size:13px;font-weight:600;cursor:pointer}
+  button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .spacer{flex:1}
+  .hint{color:var(--muted);font-size:12px}
+  .status{margin-bottom:12px;font-size:13px}
+  .status.err{background:var(--err-bg);color:var(--err);border:1px solid var(--err);
+    border-radius:6px;padding:10px 12px;white-space:pre-wrap;font-family:var(--mono);font-size:12px}
+  .ok{color:var(--ok);font-weight:600}
+  .tablebox{overflow-x:auto;border:1px solid var(--border);border-radius:6px}
+  table{border-collapse:collapse;width:100%;font-size:13px;font-family:var(--mono)}
+  th,td{border-bottom:1px solid var(--border);padding:7px 10px;text-align:left;white-space:nowrap;
+    max-width:380px;overflow:hidden;text-overflow:ellipsis}
+  th{background:var(--row);position:sticky;top:0;font-weight:600}
+  tbody tr:nth-child(even){background:var(--row)}
+  td.null{color:var(--muted);font-style:italic}
+  .pwwrap{position:relative}
+  .pwwrap button{position:absolute;right:4px;top:4px;padding:4px 8px;font-size:11px;border:0;background:transparent;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>MSSQL Query Console</h1>
+
+  <div class="panel">
+    <div class="grid">
+      <div>
+        <label for="endpoint">Endpoint URL</label>
+        <input id="endpoint" type="url" placeholder="https://api.example.com/api/query" autocomplete="off" spellcheck="false">
+      </div>
+      <div>
+        <label for="apikey">API Key</label>
+        <div class="pwwrap">
+          <input id="apikey" type="password" placeholder="x-api-key" autocomplete="off" spellcheck="false">
+          <button type="button" id="toggleKey">show</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <label style="margin:0"><input type="checkbox" id="remember" style="width:auto;margin-right:6px">Remember in this browser</label>
+      <span class="hint">The key is sent from the browser. Only use a key scoped to a read-only SQL login.</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label for="sql">SQL Query</label>
+    <textarea id="sql" spellcheck="false" placeholder="SELECT TOP (100) * FROM dbo.Users">SELECT TOP (100) * FROM INFORMATION_SCHEMA.TABLES</textarea>
+    <label for="params" style="margin-top:12px">Parameters (JSON, optional)</label>
+    <input id="params" spellcheck="false" autocomplete="off" placeholder='{"limit":{"type":"int","value":10},"name":"%sat%"}'>
+    <div class="row">
+      <button class="primary" id="run">Run query</button>
+      <button id="clear">Clear</button>
+      <button id="csv" disabled>Download CSV</button>
+      <span class="spacer"></span>
+      <span class="hint">Ctrl / Cmd + Enter to run</span>
+    </div>
+  </div>
+
+  <div id="status" class="status"></div>
+  <div id="result"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var endpoint = $("endpoint"), apikey = $("apikey"), sqlBox = $("sql"), paramsBox = $("params");
+  var remember = $("remember"), statusEl = $("status"), resultEl = $("result"), csvBtn = $("csv");
+  var lastRows = null, running = false;
+  var STORE = "mssql-console";
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      endpoint.value = s.endpoint || "";
+      apikey.value = s.apikey || "";
+      if (s.sql) sqlBox.value = s.sql;
+      if (s.params) paramsBox.value = s.params;
+      remember.checked = true;
+    } catch (e) { /* storage unavailable */ }
+  }
+  function save() {
+    try {
+      if (!remember.checked) { localStorage.removeItem(STORE); return; }
+      localStorage.setItem(STORE, JSON.stringify({
+        endpoint: endpoint.value, apikey: apikey.value,
+        sql: sqlBox.value, params: paramsBox.value
+      }));
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  function setStatus(msg, isError) {
+    statusEl.className = "status" + (isError ? " err" : "");
+    statusEl.textContent = "";
+    if (msg) statusEl.appendChild(document.createTextNode(msg));
+  }
+
+  function render(rows, meta) {
+    resultEl.textContent = "";
+    if (!rows || !rows.length) { resultEl.innerHTML = '<div class="hint">No rows returned.</div>'; return; }
+    var cols = Object.keys(rows[0]);
+    var box = document.createElement("div"); box.className = "tablebox";
+    var table = document.createElement("table");
+    var thead = document.createElement("thead"), tr = document.createElement("tr");
+    cols.forEach(function (c) { var th = document.createElement("th"); th.textContent = c; tr.appendChild(th); });
+    thead.appendChild(tr); table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    rows.forEach(function (r) {
+      var row = document.createElement("tr");
+      cols.forEach(function (c) {
+        var td = document.createElement("td"), v = r[c];
+        if (v === null || v === undefined) { td.className = "null"; td.textContent = "NULL"; }
+        else if (typeof v === "object") td.textContent = JSON.stringify(v);
+        else td.textContent = String(v);
+        td.title = td.textContent;
+        row.appendChild(td);
+      });
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody); box.appendChild(table); resultEl.appendChild(box);
+    if (meta) { var d = document.createElement("div"); d.className = "hint"; d.style.marginTop = "8px"; d.textContent = meta; resultEl.appendChild(d); }
+  }
+
+  function toCsv(rows) {
+    var cols = Object.keys(rows[0]);
+    var esc = function (v) {
+      if (v === null || v === undefined) return "";
+      var s = typeof v === "object" ? JSON.stringify(v) : String(v);
+      return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    return [cols.join(",")].concat(rows.map(function (r) {
+      return cols.map(function (c) { return esc(r[c]); }).join(",");
+    })).join("\r\n");
+  }
+
+  async function run() {
+    if (running) return;
+    var url = endpoint.value.trim(), key = apikey.value.trim(), text = sqlBox.value.trim();
+    if (!url) { setStatus("Endpoint URL is required.", true); return; }
+    if (!text) { setStatus("SQL query is empty.", true); return; }
+
+    var body = { query: text };
+    var ptext = paramsBox.value.trim();
+    if (ptext) {
+      try { body.params = JSON.parse(ptext); }
+      catch (e) { setStatus("Parameters must be valid JSON: " + e.message, true); return; }
+    }
+
+    running = true; $("run").disabled = true; csvBtn.disabled = true; lastRows = null;
+    setStatus("Running...", false);
+    resultEl.textContent = "";
+    var t0 = performance.now();
+
+    try {
+      var res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": key },
+        body: JSON.stringify(body)
+      });
+      var raw = await res.text();
+      var data;
+      try { data = JSON.parse(raw); } catch (e) { data = null; }
+
+      if (!res.ok) {
+        setStatus("HTTP " + res.status + " " + res.statusText + "\n" + ((data && data.error) || raw.slice(0, 2000)), true);
+        return;
+      }
+      var rows = (data && (data.data || data.rows)) || [];
+      lastRows = rows.length ? rows : null;
+      csvBtn.disabled = !lastRows;
+
+      var ms = Math.round(performance.now() - t0);
+      var parts = [rows.length + " row(s)"];
+      if (data && data.durationMs != null) parts.push("server " + data.durationMs + " ms");
+      parts.push("total " + ms + " ms");
+      if (data && data.rowsAffected && data.rowsAffected.length) parts.push("rowsAffected " + data.rowsAffected.join(", "));
+      if (data && data.truncated) parts.push("result truncated by server limit");
+      setStatus("");
+      statusEl.innerHTML = '<span class="ok">Success</span> <span class="hint">' + parts.join(" \u00B7 ") + "</span>";
+      render(rows, null);
+      save();
+    } catch (e) {
+      setStatus("Request failed: " + e.message +
+        "\nCheck the endpoint URL, that the server is reachable over HTTPS, and that CORS allows this origin.", true);
+    } finally {
+      running = false; $("run").disabled = false;
+    }
+  }
+
+  $("run").addEventListener("click", run);
+  $("clear").addEventListener("click", function () {
+    sqlBox.value = ""; resultEl.textContent = ""; setStatus(""); csvBtn.disabled = true; lastRows = null; sqlBox.focus();
+  });
+  $("toggleKey").addEventListener("click", function () {
+    var show = apikey.type === "password";
+    apikey.type = show ? "text" : "password";
+    this.textContent = show ? "hide" : "show";
+  });
+  csvBtn.addEventListener("click", function () {
+    if (!lastRows) return;
+    var blob = new Blob(["\uFEFF" + toCsv(lastRows)], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "query-result-" + Date.now() + ".csv";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); run(); }
+  });
+  [endpoint, apikey, sqlBox, paramsBox, remember].forEach(function (el) {
+    el.addEventListener("change", save);
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
